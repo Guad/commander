@@ -65,6 +65,11 @@ func validateArgs(userArgs []string, parsers []argument) error {
 
 // Execute runs the parser on the provided text and executes the found command.
 func (g *CommandGroup) Execute(text string) (bool, error) {
+	return g.ExecuteWithContext(text, make(map[string]interface{}))
+}
+
+// ExecuteWithContext runs the parser on the provided text and executes the found command with the provided context.
+func (g *CommandGroup) ExecuteWithContext(text string, context map[string]interface{}) (bool, error) {
 	split := strings.Split(text, " ")
 
 	split = cleanStringSlice(split)
@@ -73,8 +78,16 @@ func (g *CommandGroup) Execute(text string) (bool, error) {
 		return false, nil
 	}
 
+	prefix := split[0]
+
+	if strings.ContainsRune(prefix, '@') {
+		i := strings.IndexRune(prefix, '@')
+		runes := []rune(prefix)
+		prefix = string(runes[:i])
+	}
+
 	// Find the command
-	cmd, mw, ok := g.findCommand(split[0])
+	cmd, mw, ok := g.findCommand(prefix)
 
 	if !ok {
 		return false, nil
@@ -84,7 +97,7 @@ func (g *CommandGroup) Execute(text string) (bool, error) {
 	ctx := &Context{
 		Name:   cmd.prefix,
 		Args:   split[1:],
-		params: make(map[string]interface{}),
+		params: context,
 	}
 
 	if err := validateArgs(split, cmd.parsers); err != nil {
@@ -114,11 +127,6 @@ func (g *CommandGroup) Execute(text string) (bool, error) {
 		}
 
 		argi++
-	}
-
-	// Add custom context
-	if g.Contextualizer != nil {
-		g.Contextualizer(ctx)
 	}
 
 	handler := cmd.handler

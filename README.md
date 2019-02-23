@@ -11,8 +11,7 @@ func main() {
 
 	c.Command("/hello {times:int} {text+}", helloCommand)
 
-	text := "/hello 5 world and everyone"
-	ok, err := c.Execute(strings.Trim(text, "\n\r"))
+	ok, err := c.Execute("/hello 5 world and everyone")
 	fmt.Println("Success?", ok, "Error:", err)
 }
 ````
