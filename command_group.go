@@ -2,9 +2,10 @@ package commander
 
 // CommandGroup is a collection of commands and middlewares that only apply to this path.
 type CommandGroup struct {
-	subgroups  []*CommandGroup
-	commands   map[string]*command
-	middleware []CommandMiddleware
+	subgroups    []*CommandGroup
+	commands     map[string]*command
+	middleware   []CommandMiddleware
+	Preprocessor Preprocessor
 }
 
 // CommandMiddleware is a simple middleware for commands.

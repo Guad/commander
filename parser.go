@@ -74,20 +74,18 @@ func (g *CommandGroup) ExecuteWithContext(text string, context map[string]interf
 
 	split = cleanStringSlice(split)
 
+	if g.Preprocessor != nil {
+		if !g.Preprocessor.Process(split) {
+			return false, nil
+		}
+	}
+
 	if len(split) == 0 || !strings.HasPrefix(text, "/") {
 		return false, nil
 	}
 
-	prefix := split[0]
-
-	if strings.ContainsRune(prefix, '@') {
-		i := strings.IndexRune(prefix, '@')
-		runes := []rune(prefix)
-		prefix = string(runes[:i])
-	}
-
 	// Find the command
-	cmd, mw, ok := g.findCommand(prefix)
+	cmd, mw, ok := g.findCommand(split[0])
 
 	if !ok {
 		return false, nil
