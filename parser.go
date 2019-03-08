@@ -80,7 +80,7 @@ func (g *CommandGroup) ExecuteWithContext(text string, context map[string]interf
 		}
 	}
 
-	if len(split) == 0 || !strings.HasPrefix(text, "/") {
+	if len(split) == 0 || !strings.HasPrefix(split[0], "/") {
 		return false, nil
 	}
 

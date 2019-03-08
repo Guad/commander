@@ -43,6 +43,7 @@ func (t *IRCPreprocessor) Process(args []string) bool {
 
 	if len(prefix) > 0 && prefix[0] == '!' {
 		args[0] = string(append([]rune{'/'}, []rune(prefix[1:])...))
+		return true
 	}
 
 	return false
