@@ -33,3 +33,20 @@ func (t *TelegramPreprocessor) Process(args []string) bool {
 
 // Ensure TelegramPreprocessor adheres to the interface.
 var _ Preprocessor = &TelegramPreprocessor{}
+
+// IRCPreprocessor makes commands starting with ! work
+type IRCPreprocessor struct {
+}
+
+func (t *IRCPreprocessor) Process(args []string) bool {
+	prefix := args[0]
+
+	if len(prefix) > 0 && prefix[0] == '!' {
+		args[0] = string(append([]rune{'/'}, []rune(prefix[1:])...))
+	}
+
+	return false
+}
+
+// Ensure TelegramPreprocessor adheres to the interface.
+var _ Preprocessor = &IRCPreprocessor{}
