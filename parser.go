@@ -75,8 +75,10 @@ func (g *CommandGroup) ExecuteWithContext(text string, context map[string]interf
 	split = cleanStringSlice(split)
 
 	if g.Preprocessor != nil {
-		if !g.Preprocessor.Process(split) {
+		if newargs, ok := g.Preprocessor.Process(split); !ok {
 			return false, nil
+		} else {
+			split = newargs
 		}
 	}
 
