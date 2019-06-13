@@ -155,7 +155,7 @@ func (g *CommandGroup) ExecuteWithContext(text string, context map[string]interf
 	return true, handler(*ctx)
 }
 
-// TriggerWithContext executes the event on all handlers.
+// Trigger executes the event on all handlers.
 func (g *CommandGroup) Trigger(name string) (bool, []error) {
 	return g.TriggerWithContext(name, map[string]interface{}{})
 }
