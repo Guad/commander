@@ -20,6 +20,23 @@ func (g *CommandGroup) findCommand(prefix string) (*command, []CommandMiddleware
 	return cmd, mw, ok
 }
 
+func (g *CommandGroup) findEvents(name string) []*event {
+	cmd, ok := g.events[name]
+
+	var handlers []*event
+
+	if ok {
+		handlers = make([]*event, len(cmd))
+		copy(handlers, cmd)
+	}
+
+	for i := 0; i < len(g.subgroups); i++ {
+		handlers = append(handlers, g.subgroups[i].findEvents(name)...)
+	}
+
+	return handlers
+}
+
 func cleanStringSlice(slice []string) []string {
 	j := 0
 	for j < len(slice) {
@@ -136,4 +153,37 @@ func (g *CommandGroup) ExecuteWithContext(text string, context map[string]interf
 
 	// Execute command.
 	return true, handler(*ctx)
+}
+
+// TriggerWithContext executes the event on all handlers.
+func (g *CommandGroup) Trigger(name string) (bool, []error) {
+	return g.TriggerWithContext(name, map[string]interface{}{})
+}
+
+// TriggerWithContext executes the event on all handlers with the provided context.
+func (g *CommandGroup) TriggerWithContext(name string, context map[string]interface{}) (bool, []error) {
+	ev := g.findEvents(name)
+
+	if len(ev) == 0 {
+		return false, nil
+	}
+
+	// Parse args
+	ctx := &Context{
+		Name:   name,
+		Args:   []string{name},
+		params: context,
+	}
+
+	var errs []error
+
+	for i := range ev {
+		err := ev[i].handler(*ctx)
+
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	return true, errs
 }

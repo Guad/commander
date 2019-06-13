@@ -4,6 +4,7 @@ package commander
 type CommandGroup struct {
 	subgroups    []*CommandGroup
 	commands     map[string]*command
+	events       map[string][]*event
 	middleware   []CommandMiddleware
 	Preprocessor Preprocessor
 }
