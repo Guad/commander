@@ -16,6 +16,7 @@ type CommandMiddleware func(Handler) Handler
 func New() *CommandGroup {
 	return &CommandGroup{
 		commands: make(map[string]*command),
+		events:   make(map[string][]*event),
 	}
 }
 
